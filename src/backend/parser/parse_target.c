@@ -121,6 +121,7 @@ transformTargetEntry(ParseState *pstate,
 		colname = FigureColname(node);
 	}
 
+    ereport(WARNING,errmsg("transformTargetEntry->colname %s %d",colname,pstate->p_next_resno));
 	return makeTargetEntry((Expr *) expr,
 						   (AttrNumber) pstate->p_next_resno++,
 						   colname,
@@ -149,6 +150,13 @@ transformTargetList(ParseState *pstate, List *targetlist,
 
 	/* Expand "something.*" in SELECT and RETURNING, but not UPDATE */
 	expand_star = (exprKind != EXPR_KIND_UPDATE_SOURCE);
+
+    elog(LOG,"pstate->p_sourcetext %s",pstate->p_sourcetext);
+    if (pre_transform_target_entry_hook){
+        ereport(WARNING,errmsg("pre_transform_target_entry_hook = true"));
+    }else{
+        ereport(WARNING,errmsg("pre_transform_target_entry_hook = false"));
+    }
 
 	foreach(o_target, targetlist)
 	{
